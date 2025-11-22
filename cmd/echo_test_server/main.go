@@ -5,6 +5,5 @@ import (
 )
 
 func main() {
-	echo.SetLogFileLocation("")
 	echo.EchoServer(20001)
 }
