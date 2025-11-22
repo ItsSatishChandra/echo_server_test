@@ -31,6 +31,10 @@ func UdpServer(port int) {
 		}
 
 		input := string(buffer[:n])
+		if input == "" {
+			continue
+		}
+
 		output := internal.Echo(source, input)
 
 		_, err = conn.WriteToUDP([]byte(output), clientAddr)

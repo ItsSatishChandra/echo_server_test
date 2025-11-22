@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Echo Server",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/cmd/echo_test_server",
+            "args": [
+                "-tcp-port", "20001",
+                "-udp-port", "20002",
+                "-log-file", "./data/echo_server_debug.log"
+            ],
+            "env": {
+                "LOG_LEVEL": "debug"
+            }
+        }
+    ]
+}
