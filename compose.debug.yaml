@@ -1,0 +1,10 @@
+services:
+  echoservertest:
+    image: echoservertest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "20001:20001"
+    volumes:
+      - ./data:/app/data
