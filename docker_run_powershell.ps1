@@ -8,10 +8,10 @@ function Invoke-EchoServer {
         New-Item -ItemType Directory -Path $HostLogDir | Out-Null
     }
 
-    $ContainerLogFile = "/app/data/echo.log"
+    $ContainerLogFile = "/app/data/echo_server.log"
 
-    Write-Host "Host Log Directory: $HostLogDir"
-    Write-Host "Container Log File: $ContainerLogFile"
+    Write-Host "Using Local Log Directory: $HostLogDir"
+    Write-Host "Using Container Log File: $ContainerLogFile"
     Write-Host "Using TCP Port: $TcpPort"
     Write-Host "Using UDP Port: $UdpPort"
 

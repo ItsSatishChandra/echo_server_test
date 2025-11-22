@@ -9,7 +9,7 @@ import (
 )
 
 func EchoServer(tcpPort int, udpPort int, logFileLocation string) {
-	internal.SetLogFileLocation("")
+	internal.SetLogFileLocation(logFileLocation)
 	var waitGroup sync.WaitGroup
 	waitGroup.Add(2)
 
