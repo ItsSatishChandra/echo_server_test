@@ -1,9 +1,9 @@
 package main
 
 import (
-	echo "github.com/ItsSatishChandra/echo_server_test/cmd/Echo"
+	echo_server "github.com/ItsSatishChandra/echo_server_test/cmd/echo"
 )
 
 func main() {
-	echo.EchoServer(20001)
+	echo_server.EchoServer(20001)
 }
