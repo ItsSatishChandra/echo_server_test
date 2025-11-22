@@ -5,7 +5,7 @@ import (
 	"net"
 )
 
-func ConnectionListener(connection net.Conn) {
+func ConnectionListener(source string, connection net.Conn) {
 	defer connection.Close()
 
 	reader := bufio.NewReader(connection)
@@ -15,7 +15,7 @@ func ConnectionListener(connection net.Conn) {
 		if err != nil {
 			return
 		}
-		output := Echo(message)
+		output := Echo(source, message)
 		connection.Write([]byte(output))
 	}
 }

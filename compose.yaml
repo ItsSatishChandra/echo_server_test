@@ -6,5 +6,6 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - "20001:20001"
+      - "20002:20002/udp"
     volumes:
       - ./data:/app/data
