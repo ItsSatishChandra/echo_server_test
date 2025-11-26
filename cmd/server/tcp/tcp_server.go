@@ -1,6 +1,7 @@
 package tcp_server
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
@@ -8,7 +9,7 @@ import (
 	internal "github.com/ItsSatishChandra/echo_server_test/cmd/internal"
 )
 
-func TcpServer(port int) {
+func TcpServer(ctx context.Context, port int) {
 	source := "TCP"
 	listen, err := net.Listen("tcp", fmt.Sprintf(":%v", port))
 	if err != nil {
@@ -17,13 +18,29 @@ func TcpServer(port int) {
 	}
 	defer listen.Close()
 
-	for {
-		conn, err := listen.Accept()
-		if err != nil {
-			internal.EchoLogger(source, fmt.Sprintf("Failed to accept connection: %v", err))
-			log.Printf("Failed to accept connection: %v", err)
-			continue
+	acceptChannel := make(chan net.Conn)
+	errorChannel := make(chan error)
+
+	go func() {
+		for {
+			conn, err := listen.Accept()
+			if err != nil {
+				errorChannel <- err
+				continue
+			}
+			acceptChannel <- conn
 		}
-		go internal.ConnectionListener(source, conn)
+	}()
+
+	for {
+		select {
+		case <-ctx.Done():
+			internal.EchoLogger(source, "Shutting down TCP server")
+			return
+		case err := <-errorChannel:
+			internal.EchoLogger(source, fmt.Sprintf("Failed to accept connection: %v", err))
+		case conn := <-acceptChannel:
+			go internal.ConnectionListener(ctx, source, conn)
+		}
 	}
 }

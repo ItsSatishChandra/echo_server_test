@@ -1,14 +1,16 @@
 package udp_server
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
+	"time"
 
 	"github.com/ItsSatishChandra/echo_server_test/cmd/internal"
 )
 
-func UdpServer(port int) {
+func UdpServer(ctx context.Context, port int) {
 	source := "UDP"
 	addr := net.UDPAddr{
 		Port: port,
@@ -23,8 +25,22 @@ func UdpServer(port int) {
 
 	buffer := make([]byte, 1024)
 
+	conn.SetReadDeadline(time.Now().Add(500 * time.Millisecond))
+
 	for {
+		select {
+		case <-ctx.Done():
+			internal.EchoLogger(source, "Shutting down UDP server")
+			return
+		default:
+		}
 		n, clientAddr, err := conn.ReadFromUDP(buffer)
+
+		if ne, ok := err.(net.Error); ok && ne.Timeout() {
+			conn.SetReadDeadline(time.Now().Add(500 * time.Millisecond))
+			continue
+		}
+
 		if err != nil {
 			internal.EchoLogger(source, fmt.Sprintf("Failed to read from UDP: %v", err))
 			continue
@@ -39,9 +55,17 @@ func UdpServer(port int) {
 
 		_, err = conn.WriteToUDP([]byte(output), clientAddr)
 		if err != nil {
-			log.Printf("Failed to write to UDP: %v", err)
-			internal.EchoLogger(source, fmt.Sprintf("Failed to write to UDP: %v", err))
-			continue
+			select {
+			case <-ctx.Done():
+				internal.EchoLogger(source, "Shutting down UDP server")
+				return
+			default:
+				if ne, ok := err.(net.Error); ok && ne.Timeout() {
+					continue
+				}
+				internal.EchoLogger(source, fmt.Sprintf("Failed to write to UDP: %v", err))
+				continue
+			}
 		}
 	}
 
